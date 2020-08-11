@@ -6,6 +6,8 @@
 #include <QDialogButtonBox>
 #include <QLabel>
 #include <QVBoxLayout>
+#include <QTimer>
+#include <QTime>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -19,7 +21,7 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::initDialog(QInputDialog &dialog, const QString &title, const QString &lable_text, const QString text)
+void MainWindow::initEditDialog(QInputDialog &dialog, const QString &title, const QString &lable_text, const QString text)
 {
     dialog.setWindowTitle(title);
     dialog.setInputMode(QInputDialog::InputMode::TextInput);
@@ -34,21 +36,20 @@ void MainWindow::initDialog(QInputDialog &dialog, const QString &title, const QS
 void MainWindow::on_ptn_default_clicked()
 {
     QInputDialog dialog{this, Qt::WindowCloseButtonHint};
-    initDialog(dialog,tr("创建文件夹"), tr("请输入文件夹名称:") );
+    initEditDialog(dialog,tr("创建文件夹"), tr("请输入文件夹名称:") );
 
     QString style = ui->te_default->toPlainText();
     dialog.setStyleSheet(style);
 
     if(dialog.exec() == QDialog::Accepted)
-        qDebug() << dialog.textValue();
-
+        qDebug() << dialog.intValue();
 
 }
 
 void MainWindow::on_ptn_new_clicked()
 {
     QInputDialog dialog{this, Qt::WindowCloseButtonHint};
-    initDialog(dialog,tr("创建文件夹"), tr("请输入文件夹名称:") );
+    initEditDialog(dialog,tr("创建文件夹"), tr("请输入文件夹名称:") );
 
     if (QDialogButtonBox *btn_box =  dialog.findChild<QDialogButtonBox*>() ){
         QString ok_style = ui->te_okbtn->toPlainText();
@@ -57,21 +58,46 @@ void MainWindow::on_ptn_new_clicked()
         btn_box->button(QDialogButtonBox::Cancel)->setStyleSheet(cancel_style);
     }
 
-    if (QLineEdit * edit = dialog.findChild<QLineEdit*>()) {
-        QString style = ui->te_edit->toPlainText();
-        edit->setStyleSheet(style);
+    if (QVBoxLayout * layout = dialog.findChild<QVBoxLayout *>() ) {
+        int space = ui->spinBox->value();
+        layout->setSpacing(space);
     }
 
-    if (QLabel * label = dialog.findChild<QLabel*>()) {
-        QString style = ui->te_lable->toPlainText();
-        label->setStyleSheet(style);
-    }
-
-//    if (QVBoxLayout * layout = dialog.findChild<QVBoxLayout *>() ) {
-//        layout->setSpacing(15);
-//    }
+    QString style = ui->te_total->toPlainText();
+    dialog.setStyleSheet(style);
 
 
     if(dialog.exec() == QDialog::Accepted)
         qDebug() << dialog.textValue();
+}
+
+void MainWindow::on_ptn_hasparent_clicked()
+{
+    bool ok = false;
+    QTimer::singleShot(0, [this](){
+        QInputDialog *dialog = this->findChild<QInputDialog *>();
+        QString style = ui->te_default->toPlainText();
+        dialog->setStyleSheet(style);
+    });
+    QString value = QInputDialog::getText(this, tr("创建文件夹"), tr("请输入文件夹名称："),QLineEdit::Normal, "", &ok, Qt::WindowCloseButtonHint );
+
+    if (ok)
+        qDebug() << value;
+}
+
+void MainWindow::on_ptn_noparent_clicked()
+{
+    bool ok = false;
+    QTimer::singleShot(0, [this](){
+        for(QWidget *widget: QApplication::topLevelWidgets()){
+            if(QInputDialog *dialog = qobject_cast<QInputDialog*>(widget)){
+                QString style = ui->te_default->toPlainText();
+                dialog->setStyleSheet(style);
+            }
+        }
+    });
+    QString value = QInputDialog::getText(NULL, tr("创建文件夹"), tr("请输入文件夹名称："),QLineEdit::Normal, "", &ok, Qt::WindowCloseButtonHint );
+
+    if (ok)
+        qDebug() << value;
 }

@@ -17,11 +17,15 @@ public:
     ~MainWindow();
 
 private slots:
-    void initDialog(QInputDialog &dialog, const QString &title, const QString &lable_text, const QString text = "");
+    void initEditDialog(QInputDialog &dialog, const QString &title, const QString &lable_text, const QString text = "");
 
     void on_ptn_default_clicked();
 
     void on_ptn_new_clicked();
+
+    void on_ptn_hasparent_clicked();
+
+    void on_ptn_noparent_clicked();
 
 private:
     Ui::MainWindow *ui;
