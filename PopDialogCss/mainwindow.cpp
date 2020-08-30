@@ -35,14 +35,18 @@ void MainWindow::initEditDialog(QInputDialog &dialog, const QString &title, cons
 
 void MainWindow::on_ptn_default_clicked()
 {
-    QInputDialog dialog{this, Qt::WindowCloseButtonHint};
-    initEditDialog(dialog,tr("创建文件夹"), tr("请输入文件夹名称:") );
+    QInputDialog *dialog = new QInputDialog{this, Qt::WindowCloseButtonHint};
+    initEditDialog(*dialog,tr("创建文件夹"), tr("请输入文件夹名称:") );
 
     QString style = ui->te_default->toPlainText();
-    dialog.setStyleSheet(style);
+    dialog->setStyleSheet(style);
 
-    if(dialog.exec() == QDialog::Accepted)
-        qDebug() << dialog.intValue();
+//    if(dialog.exec() == QDialog::Accepted)
+//        qDebug() << dialog.intValue();
+
+//    connect(dialog, QInputDialog::textValueSelected, this, MainWindow::test);
+
+    dialog->open(this, SLOT(test(QString)));
 
 }
 
@@ -100,4 +104,9 @@ void MainWindow::on_ptn_noparent_clicked()
 
     if (ok)
         qDebug() << value;
+}
+
+void MainWindow::test(QString text)
+{
+    qDebug() << text;
 }

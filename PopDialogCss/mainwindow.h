@@ -27,6 +27,10 @@ private slots:
 
     void on_ptn_noparent_clicked();
 
+    void test(QString text);
+
+
+
 private:
     Ui::MainWindow *ui;
 };
